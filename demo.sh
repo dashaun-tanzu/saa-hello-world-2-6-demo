@@ -3,46 +3,49 @@
 DEMO_START=$(date +%s)
 
 TEMP_DIR="upgrade-example"
-noClear=""
 
+# Java version configuration
+JAVA8_VERSION="8.0.442-librca"
+JAVA24_VERSION="24.2.2.r24-nik"
 
-if [  "$1" == "-H" ] || [ "$1" == "-h" ] || [ "$1" == "--H" ] || [ "$1" == "--h" ] || [ "$1" == "-help" ] || [ "$1" == "--help" ]
-	then
-		usage
-		exit 10
-fi		
-	
-if [ "$1" == "-noClear" ] 
-	then
-		noClear="Y"
-fi		
+# Function to check if a command exists
+check_dependency() {
+  local cmd=$1
+  local install_msg=$2
+  
+  if ! command -v "$cmd" &> /dev/null; then
+    echo "$cmd not found. $install_msg"
+    return 1
+  fi
+  return 0
+}
 
-	
+# Check all required dependencies
+check_dependencies() {
+  local missing_deps=()
+  
+  # Check dependencies in parallel by storing results
+  check_dependency "vendir" "Please install vendir first." || missing_deps+=("vendir")
+  check_dependency "http" "Please install httpie first." || missing_deps+=("httpie")
+  check_dependency "bc" "Please install bc first." || missing_deps+=("bc")
+  check_dependency "git" "Please install git first." || missing_deps+=("git")
+  
+  if [ ${#missing_deps[@]} -gt 0 ]; then
+    echo "Missing dependencies: ${missing_deps[*]}"
+    exit 1
+  fi
+  
+  echo "All dependencies found."
+}
+
 # Load helper functions and set initial variables
-
-returnVal=99
-vendir --version &> /dev/null	
-returnVal=$?
-	
-if [ $returnVal -ne 0 ]; then
-  echo "vendir not found. Please install vendir first."	
-	exit 1
-fi
-
-returnVal=99
-http --version &> /dev/null	
-returnVal=$?
-	
-if [ $returnVal -ne 0 ]; then
-  echo "httpie not found. Please install httpie first."	
-	exit 1
-fi
+check_dependencies
 
 vendir sync
 . ./vendir/demo-magic/demo-magic.sh
 export TYPE_SPEED=100
 export DEMO_PROMPT="${GREEN}➜ ${CYAN}\W ${COLOR_RESET}"
-PROMPT_TIMEOUT=6
+export PROMPT_TIMEOUT=6
 
 
 # Stop ANY & ALL Java Process...they could be Springboot running on our ports!
@@ -66,33 +69,47 @@ function cleanUp {
 	fi
 }
 
-# Function to pause and clear [ or not ] the screen
+# Function to pause and clear the screen
 function talkingPoint() {
   wait
+  clear
+}
 
-  if [ "$noClear" == "Y" ]; then
-    echo ""
-    echo "--------------------------------------------------------------------------------------------"
-    echo "********************************************************************************************"
-    echo "--------------------------------------------------------------------------------------------"
-    echo ""
-  else
-    clear
-  fi
+# Check if Java version is already installed
+check_java_installed() {
+  local version=$1
+  sdk list java | grep -q "$version" && sdk list java | grep "$version" | grep -q "installed"
 }
 
 # Initialize SDKMAN and install required Java versions
 function initSDKman() {
-  local sdkman_init="${SDKMAN_DIR:-$HOME/.sdkman}/bin/sdkman-init.sh"
+  local sdkman_init
+  sdkman_init="${SDKMAN_DIR:-$HOME/.sdkman}/bin/sdkman-init.sh"
   if [[ -f "$sdkman_init" ]]; then
+    # shellcheck disable=SC1090
     source "$sdkman_init"
   else
     echo "SDKMAN not found. Please install SDKMAN first."
     exit 1
   fi
+  
+  echo "Updating SDKMAN..."
   sdk update
-  sdk install java 8.0.462-librca
-  sdk install java 24.0.2-graalce
+  
+  # Install Java versions only if not already installed
+  if ! check_java_installed "$JAVA8_VERSION"; then
+    echo "Installing Java $JAVA8_VERSION..."
+    sdk install java "$JAVA8_VERSION"
+  else
+    echo "Java $JAVA8_VERSION already installed."
+  fi
+  
+  if ! check_java_installed "$JAVA24_VERSION"; then
+    echo "Installing Java $JAVA24_VERSION..."
+    sdk install java "$JAVA24_VERSION"
+  else
+    echo "Java $JAVA24_VERSION already installed."
+  fi
 }
 
 # Prepare the working directory
@@ -100,24 +117,20 @@ function init {
   rm -rf "$TEMP_DIR"
   mkdir "$TEMP_DIR"
   cd "$TEMP_DIR" || exit
-  
-	if [ "$noClear" != "Y" ] 
-		then
-			clear
-	fi		
+  clear
 }
 
 # Switch to Java 8 and display version
 function useJava8 {
   displayMessage "Use Java 8, this is for educational purposes only, don't do this at home! (I have jokes.)"
-  pei "sdk use java 8.0.462-librca"
+  pei "sdk use java $JAVA8_VERSION"
   pei "java -version"
 }
 
 # Switch to Java 24 and display version
 function useJava24 {
   displayMessage "Switch to Java 24 for Spring Boot 3"
-  pei "sdk use java 24.0.2-graalce"
+  pei "sdk use java $JAVA24_VERSION"
   pei "java -version"
 }
 
@@ -149,8 +162,10 @@ function validateApp {
 function showMemoryUsage {
   local pid=$1
   local log_file=$2
-  local rss=$(ps -o rss= "$pid" | tail -n1)
-  local mem_usage=$(bc <<< "scale=1; ${rss}/1024")
+  local rss
+  rss=$(ps -o rss= "$pid" | tail -n1)
+  local mem_usage
+  mem_usage=$(bc <<< "scale=1; ${rss}/1024")
   echo "The process was using ${mem_usage} megabytes"
   echo "${mem_usage}" >> "$log_file"
 }
@@ -191,7 +206,8 @@ function startNative {
 # Stop the native image
 function stopNative {
   displayMessage "Stop the native image"
-  local npid=$(pgrep hello-spring)
+  local npid
+  npid=$(pgrep hello-spring)
   pei "kill -9 $npid"
 }
 
@@ -244,7 +260,7 @@ function statsSoFarTableColored {
   DEMO_ELAPSED=$((DEMO_STOP - DEMO_START))
   echo ""
   echo ""
-  echo -e "${WHITE}Demo elapsed time: ${DEMO_ELAPSED} seconds${NC}"
+  echo -e "${BLUE}Demo elapsed time: ${DEMO_ELAPSED} seconds${NC}"
 }
 
 # Main execution flow
