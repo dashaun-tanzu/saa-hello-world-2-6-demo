@@ -5,8 +5,8 @@ DEMO_START=$(date +%s)
 TEMP_DIR="upgrade-example"
 
 # Java version configuration
-JAVA8_VERSION="8.0.442-librca"
-JAVA24_VERSION="24.2.2.r24-nik"
+JAVA8_VERSION="8.0.462-librca"
+JAVA25_VERSION="25.r25-nik"
 
 # Function to check if a command exists
 check_dependency() {
@@ -104,11 +104,11 @@ function initSDKman() {
     echo "Java $JAVA8_VERSION already installed."
   fi
   
-  if ! check_java_installed "$JAVA24_VERSION"; then
-    echo "Installing Java $JAVA24_VERSION..."
-    sdk install java "$JAVA24_VERSION"
+  if ! check_java_installed "$JAVA25_VERSION"; then
+    echo "Installing Java $JAVA25_VERSION..."
+    sdk install java "$JAVA25_VERSION"
   else
-    echo "Java $JAVA24_VERSION already installed."
+    echo "Java $JAVA25_VERSION already installed."
   fi
 }
 
@@ -130,7 +130,7 @@ function useJava8 {
 # Switch to Java 24 and display version
 function useJava24 {
   displayMessage "Switch to Java 24 for Spring Boot 3"
-  pei "sdk use java $JAVA24_VERSION"
+  pei "sdk use java $JAVA25_VERSION"
   pei "java -version"
 }
 
@@ -246,7 +246,7 @@ function statsSoFarTableColored {
   PERC2=$(bc <<< "scale=2; 100 - ${MEM2}/${MEM1}*100")
   START2=$(startupTime 'java21with3.3.log')
   PERCSTART2=$(bc <<< "scale=2; 100 - ${START2}/${START1}*100")
-  printf "${YELLOW}%-35s %-25s %-15s %s ${NC}\n" "Spring Boot 3.5 with Java 24" "$START2 ($PERCSTART2% faster)" "$MEM2" "$PERC2%"
+  printf "${YELLOW}%-35s %-25s %-15s %s ${NC}\n" "Spring Boot 3.5 with Java 25" "$START2 ($PERCSTART2% faster)" "$MEM2" "$PERC2%"
 
   # Spring Boot 3.3 with AOT processing, native image (Green - best)
   MEM3=$(cat nativeWith3.3.log2)

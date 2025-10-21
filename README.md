@@ -32,9 +32,9 @@
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[forks-shield]: https://img.shields.io/github/forks/dashaun/openrewrite-spring-boot-upgrade-example.svg?style=for-the-badge
-[forks-url]: https://github.com/dashaun/openrewrite-spring-boot-upgrade-example/forks
-[stars-shield]: https://img.shields.io/github/stars/dashaun/openrewrite-spring-boot-upgrade-example.svg?style=for-the-badge
-[stars-url]: https://github.com/dashaun/openrewrite-spring-boot-upgrade-example/stargazers
-[issues-shield]: https://img.shields.io/github/issues/dashaun/openrewrite-spring-boot-upgrade-example.svg?style=for-the-badge
-[issues-url]: https://github.com/dashaun/openrewrite-spring-boot-upgrade-example/issues
+[forks-shield]: https://img.shields.io/github/forks/dashaun-tanzu/saa-hello-world-2-6-demo.svg?style=for-the-badge
+[forks-url]: https://github.com/dashaun-tanzu/saa-hello-world-2-6-demo/forks
+[stars-shield]: https://img.shields.io/github/stars/dashaun-tanzu/saa-hello-world-2-6-demo.svg?style=for-the-badge
+[stars-url]: https://github.com/dashaun-tanzu/saa-hello-world-2-6-demo/stargazers
+[issues-shield]: https://img.shields.io/github/issues/dashaun-tanzu/saa-hello-world-2-6-demo.svg?style=for-the-badge
+[issues-url]: https://github.com/dashaun-tanzu/saa-hello-world-2-6-demo/issues
