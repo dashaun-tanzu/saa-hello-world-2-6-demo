@@ -5,8 +5,8 @@ DEMO_START=$(date +%s)
 TEMP_DIR="upgrade-example"
 
 # Java version configuration
-JAVA8_VERSION="8.0.462-librca"
-JAVA25_VERSION="25.r25-nik"
+JAVA8_VERSION="8.0.472-librca"
+JAVA25_VERSION="25.0.1.r25-nik"
 
 # Function to check if a command exists
 check_dependency() {
