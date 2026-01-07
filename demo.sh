@@ -5,8 +5,8 @@ DEMO_START=$(date +%s)
 TEMP_DIR="upgrade-example"
 
 # Java version configuration
-JAVA8_VERSION="8.0.462-librca"
-JAVA25_VERSION="25.r25-nik"
+JAVA8_VERSION="8.0.472-librca"
+JAVA25_VERSION="25.0.1.r25-nik"
 
 # Function to check if a command exists
 check_dependency() {
@@ -200,7 +200,7 @@ function buildNative {
 # Start the native image
 function startNative {
   displayMessage "Start the native image"
-  pei "./target/hello-spring 2>&1 | tee nativeWith3.3.log &"
+  pei "./target/hello-spring 2>&1 | tee nativeWith4.0.log &"
 }
 
 # Stop the native image
@@ -241,19 +241,19 @@ function statsSoFarTableColored {
   START1=$(startupTime 'java8with2.6.log')
   printf "${RED}%-35s %-25s %-15s %s${NC}\n" "Spring Boot 2.6 with Java 8" "$START1" "$MEM1" "-"
 
-  # Spring Boot 3.3 with Java 23 (Blue - improved)
-  MEM2=$(cat java21with3.3.log2)
+  # Spring Boot 4.0 with Java 23 (Blue - improved)
+  MEM2=$(cat java21with4.0.log2)
   PERC2=$(bc <<< "scale=2; 100 - ${MEM2}/${MEM1}*100")
-  START2=$(startupTime 'java21with3.3.log')
+  START2=$(startupTime 'java21with4.0.log')
   PERCSTART2=$(bc <<< "scale=2; 100 - ${START2}/${START1}*100")
-  printf "${YELLOW}%-35s %-25s %-15s %s ${NC}\n" "Spring Boot 3.5 with Java 25" "$START2 ($PERCSTART2% faster)" "$MEM2" "$PERC2%"
+  printf "${YELLOW}%-35s %-25s %-15s %s ${NC}\n" "Spring Boot 4.0 with Java 25" "$START2 ($PERCSTART2% faster)" "$MEM2" "$PERC2%"
 
-  # Spring Boot 3.3 with AOT processing, native image (Green - best)
-  MEM3=$(cat nativeWith3.3.log2)
+  # Spring Boot 4.0 with AOT processing, native image (Green - best)
+  MEM3=$(cat nativeWith4.0.log2)
   PERC3=$(bc <<< "scale=2; 100 - ${MEM3}/${MEM1}*100")
-  START3=$(startupTime 'nativeWith3.3.log')
+  START3=$(startupTime 'nativeWith4.0.log')
   PERCSTART3=$(bc <<< "scale=2; 100 - ${START3}/${START1}*100")
-  printf "${GREEN}%-35s %-25s %-15s %s ${NC}\n" "Spring Boot 3.5 with AOT, native" "$START3 ($PERCSTART3% faster)" "$MEM3" "$PERC3%"
+  printf "${GREEN}%-35s %-25s %-15s %s ${NC}\n" "Spring Boot 4.0 with AOT, native" "$START3 ($PERCSTART3% faster)" "$MEM3" "$PERC3%"
 
   echo -e "${WHITE}--------------------------------------------------------------------------------------------${NC}"
   DEMO_STOP=$(date +%s)
@@ -290,11 +290,11 @@ advisorUpgradePlanApplySquash
 talkingPoint
 useJava24
 talkingPoint
-springBootStart java21with3.3.log
+springBootStart java21with4.0.log
 talkingPoint
 validateApp
 talkingPoint
-showMemoryUsage "$(jps | grep 'HelloSpringApplication' | cut -d ' ' -f 1)" java21with3.3.log2
+showMemoryUsage "$(jps | grep 'HelloSpringApplication' | cut -d ' ' -f 1)" java21with4.0.log2
 talkingPoint
 springBootStop
 talkingPoint
@@ -304,7 +304,7 @@ startNative
 talkingPoint
 validateApp
 talkingPoint
-showMemoryUsage "$(pgrep hello-spring)" nativeWith3.3.log2
+showMemoryUsage "$(pgrep hello-spring)" nativeWith4.0.log2
 talkingPoint
 stopNative
 talkingPoint
