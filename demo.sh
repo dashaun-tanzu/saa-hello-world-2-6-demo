@@ -6,7 +6,8 @@ TEMP_DIR="upgrade-example"
 
 # Java version configuration
 JAVA8_VERSION="8.0.472-librca"
-JAVA25_VERSION="25.0.1.r25-nik"
+JAVA25_VERSION="25.0.1-librca"
+JAVA25_NIK_VERSION="25.0.1.r25-nik"
 
 # Function to check if a command exists
 check_dependency() {
@@ -127,10 +128,17 @@ function useJava8 {
   pei "java -version"
 }
 
-# Switch to Java 24 and display version
-function useJava24 {
-  displayMessage "Switch to Java 24 for Spring Boot 3"
+# Switch to Java 25 and display version
+function useJava25 {
+  displayMessage "Switch to Java 25 for Spring Boot 4"
   pei "sdk use java $JAVA25_VERSION"
+  pei "java -version"
+}
+
+# Switch to Java 25 NIK and display version
+function useJava25NIK {
+  displayMessage "Switch to Java 25 with NIK for native image build"
+  pei "sdk use java $JAVA25_NIK_VERSION"
   pei "java -version"
 }
 
@@ -188,7 +196,7 @@ function advisorUpgradePlanGet {
 
 function advisorUpgradePlanApplySquash {
   displayMessage "Do all the upgrades!"
-  pei "advisor upgrade-plan apply --squash 9"
+  pei "advisor upgrade-plan apply --squash 10"
 }
 
 # Build a native image of the application
@@ -288,7 +296,7 @@ advisorUpgradePlanGet
 talkingPoint
 advisorUpgradePlanApplySquash
 talkingPoint
-useJava24
+useJava25
 talkingPoint
 springBootStart java21with4.0.log
 talkingPoint
@@ -297,6 +305,8 @@ talkingPoint
 showMemoryUsage "$(jps | grep 'HelloSpringApplication' | cut -d ' ' -f 1)" java21with4.0.log2
 talkingPoint
 springBootStop
+talkingPoint
+useJava25NIK
 talkingPoint
 buildNative
 talkingPoint
