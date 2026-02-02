@@ -5,9 +5,9 @@ DEMO_START=$(date +%s)
 TEMP_DIR="upgrade-example"
 
 # Java version configuration
-JAVA8_VERSION="8.0.472-librca"
-JAVA25_VERSION="25.0.1-librca"
-JAVA25_NIK_VERSION="25.0.1.r25-nik"
+JAVA8_VERSION="8.0.482-librca"
+JAVA25_VERSION="25.0.2-librca"
+JAVA25_NIK_VERSION="25.0.2.r25-nik"
 
 # Function to check if a command exists
 check_dependency() {
@@ -111,6 +111,13 @@ function initSDKman() {
   else
     echo "Java $JAVA25_VERSION already installed."
   fi
+
+  if ! check_java_installed "$JAVA25_NIK_VERSION"; then
+      echo "Installing Java $JAVA25_NIK_VERSION..."
+      sdk install java "$JAVA25_NIK_VERSION"
+    elseq
+      echo "Java $JAVA25_NIK_VERSION already installed."
+    fi
 }
 
 # Prepare the working directory
