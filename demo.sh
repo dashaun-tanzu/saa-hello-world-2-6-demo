@@ -113,11 +113,11 @@ function initSDKman() {
   fi
 
   if ! check_java_installed "$JAVA25_NIK_VERSION"; then
-      echo "Installing Java $JAVA25_NIK_VERSION..."
-      sdk install java "$JAVA25_NIK_VERSION"
-    elseq
-      echo "Java $JAVA25_NIK_VERSION already installed."
-    fi
+    echo "Installing Java $JAVA25_NIK_VERSION..."
+    sdk install java "$JAVA25_NIK_VERSION"
+  else
+    echo "Java $JAVA25_NIK_VERSION already installed."
+  fi
 }
 
 # Prepare the working directory
