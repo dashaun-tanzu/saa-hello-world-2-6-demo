@@ -4,10 +4,12 @@ DEMO_START=$(date +%s)
 
 TEMP_DIR="upgrade-example"
 
-# Java version configuration
-JAVA8_VERSION="8.0.482-librca"
-JAVA25_VERSION="25.0.2-librca"
-JAVA25_NIK_VERSION="25.0.2.r25-nik"
+# Java versions are sourced from .sdkmanrc (one `java=<version>` line per major).
+# The two Java 25 entries are disambiguated by suffix (-librca vs -nik).
+SDKMANRC="$(dirname "$0")/.sdkmanrc"
+JAVA8_VERSION=$(grep    '^java=8\.'           "$SDKMANRC" | cut -d'=' -f2)
+JAVA25_VERSION=$(grep   '^java=25\..*-librca' "$SDKMANRC" | cut -d'=' -f2)
+JAVA25_NIK_VERSION=$(grep '^java=25\..*-nik'  "$SDKMANRC" | cut -d'=' -f2)
 
 # Function to check if a command exists
 check_dependency() {
@@ -76,16 +78,8 @@ function talkingPoint() {
   clear
 }
 
-# Check if Java version is already installed
-check_java_installed() {
-  local version=$1
-  sdk list java | grep -q "$version" && sdk list java | grep "$version" | grep -q "installed"
-}
-
-# Initialize SDKMAN and install required Java versions
 function initSDKman() {
-  local sdkman_init
-  sdkman_init="${SDKMAN_DIR:-$HOME/.sdkman}/bin/sdkman-init.sh"
+  local sdkman_init="${SDKMAN_DIR:-$HOME/.sdkman}/bin/sdkman-init.sh"
   if [[ -f "$sdkman_init" ]]; then
     # shellcheck disable=SC1090
     source "$sdkman_init"
@@ -93,31 +87,10 @@ function initSDKman() {
     echo "SDKMAN not found. Please install SDKMAN first."
     exit 1
   fi
-  
-  echo "Updating SDKMAN..."
-  sdk update
-  
-  # Install Java versions only if not already installed
-  if ! check_java_installed "$JAVA8_VERSION"; then
-    echo "Installing Java $JAVA8_VERSION..."
-    sdk install java "$JAVA8_VERSION"
-  else
-    echo "Java $JAVA8_VERSION already installed."
-  fi
-  
-  if ! check_java_installed "$JAVA25_VERSION"; then
-    echo "Installing Java $JAVA25_VERSION..."
-    sdk install java "$JAVA25_VERSION"
-  else
-    echo "Java $JAVA25_VERSION already installed."
-  fi
 
-  if ! check_java_installed "$JAVA25_NIK_VERSION"; then
-    echo "Installing Java $JAVA25_NIK_VERSION..."
-    sdk install java "$JAVA25_NIK_VERSION"
-  else
-    echo "Java $JAVA25_NIK_VERSION already installed."
-  fi
+  # Install any Java versions declared in .sdkmanrc that aren't yet present.
+  # `sdk env install` reads .sdkmanrc from cwd, so cd there in a subshell.
+  (cd "$(dirname "$SDKMANRC")" && sdk env install)
 }
 
 # Prepare the working directory
