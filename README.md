@@ -18,6 +18,7 @@ A scripted live demo that takes a Spring Boot 2.6 / Java 8 app, uses [Spring App
 ## Quick Start
 
 ```bash
+export ADVISOR_VERSION=1.5.7   # pin the Spring Application Advisor CLI version
 ./demo.sh
 ```
 
@@ -25,10 +26,11 @@ A scripted live demo that takes a Spring Boot 2.6 / Java 8 app, uses [Spring App
 
 ## Prerequisites
 
-- [Spring Application Advisor](https://enterprise.spring.io/spring-application-advisor) — the `advisor` CLI must be on your `PATH` and authenticated against the Spring Enterprise Repository.
+- [Spring Application Advisor](https://enterprise.spring.io/spring-application-advisor) — the demo downloads the pinned `ADVISOR_VERSION` CLI from the Spring Enterprise Maven repo per run (no system install needed), so your `~/.m2/settings.xml` must already be authenticated against that repo.
 - [SDKMAN](https://sdkman.io/install) — `curl -s "https://get.sdkman.io" | bash`. The demo runs `sdk env install` against [`.sdkmanrc`](.sdkmanrc) to install any missing Java versions on first run.
 - [HTTPie](https://httpie.io/) — `brew install httpie`.
 - [Vendir](https://carvel.dev/vendir/) — `brew tap carvel-dev/carvel && brew install vendir`.
+- Maven (`mvn`) and `tar` — used by `download_advisor` to fetch and extract the advisor CLI.
 - `bc`, `pv`, `zip`, `unzip`, `gcc`, `zlib1g-dev` — e.g. `sudo apt install -y bc pv zip unzip gcc zlib1g-dev` on Debian/Ubuntu.
 
 ### Java versions
